@@ -2,8 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["fakestoreapi.com"],
-  }
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*", // Allow images from all domains
+      },
+    ],
+  },
 };
 
 export default nextConfig;

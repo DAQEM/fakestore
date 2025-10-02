@@ -8,9 +8,9 @@ const supabase = createClient(
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
 
   const { data, error } = await supabase
     .from('products')
@@ -19,7 +19,6 @@ export async function GET(
     .single();
 
   if (error) {
-    // If the error indicates that the row was not found, return a 404
     if (error.code === 'PGRST116') {
        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
@@ -27,4 +26,46 @@ export async function GET(
   }
 
   return NextResponse.json(data);
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  const productData = await request.json();
+
+  const { data, error } = await supabase
+    .from('products')
+    .update(productData)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  if (!data) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+  }
+
+  return NextResponse.json(data);
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return new NextResponse(null, { status: 204 }); // No Content
 }

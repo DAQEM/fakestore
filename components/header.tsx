@@ -7,7 +7,7 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold text-blue-600">
           Fake Store
         </Link>
-        <nav className="flex space-x-6">
+        <nav className="flex space-x-6 items-center">
           <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
             Home
           </Link>
@@ -16,6 +16,9 @@ export default function Header() {
           </Link>
           <Link href="/cart" className="text-gray-600 hover:text-blue-600 transition-colors">
             Cart
+          </Link>
+          <Link href="/admin" className="text-gray-600 hover:text-blue-600 transition-colors bg-gray-100 px-3 py-1 rounded-md">
+            Admin
           </Link>
         </nav>
       </div>
