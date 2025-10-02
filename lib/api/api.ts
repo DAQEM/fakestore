@@ -1,3 +1,5 @@
+import axios, { AxiosError } from 'axios';
+
 // The environment variable gives us the absolute path needed for server-side fetching.
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -19,20 +21,21 @@ export interface Product {
 // Result type for successful data or error
 type ApiResult<T> = { ok: true; data: T; error: null } | { ok: false; data: null; error: string };
 
+// Create an Axios instance with a base URL.
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+});
+
 /**
  * Fetches all products from the API.
  * @returns Promise resolving to an ApiResult with an array of Product objects.
  */
 export async function getAllProducts(): Promise<ApiResult<Product[]>> {
   try {
-    const response = await fetch(`${BASE_URL}/products`);
-    if (!response.ok) {
-      return { ok: false, data: null, error: `Failed to fetch products: ${response.status} ${response.statusText}` };
-    }
-    const data: Product[] = await response.json();
-    return { ok: true, data, error: null };
+    const response = await apiClient.get<Product[]>('/products');
+    return { ok: true, data: response.data, error: null };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    const errorMessage = err instanceof AxiosError ? err.message : 'Unknown error';
     console.error('Error fetching all products:', errorMessage);
     return { ok: false, data: null, error: errorMessage };
   }
@@ -45,14 +48,10 @@ export async function getAllProducts(): Promise<ApiResult<Product[]>> {
  */
 export async function getProductById(id: number): Promise<ApiResult<Product>> {
   try {
-    const response = await fetch(`${BASE_URL}/products/${id}`);
-    if (!response.ok) {
-      return { ok: false, data: null, error: `Failed to fetch product ${id}: ${response.status} ${response.statusText}` };
-    }
-    const data: Product = await response.json();
-    return { ok: true, data, error: null };
+    const response = await apiClient.get<Product>(`/products/${id}`);
+    return { ok: true, data: response.data, error: null };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    const errorMessage = err instanceof AxiosError ? err.message : 'Unknown error';
     console.error(`Error fetching product ${id}:`, errorMessage);
     return { ok: false, data: null, error: errorMessage };
   }
@@ -64,14 +63,10 @@ export async function getProductById(id: number): Promise<ApiResult<Product>> {
  */
 export async function getCategories(): Promise<ApiResult<string[]>> {
   try {
-    const response = await fetch(`${BASE_URL}/categories`);
-    if (!response.ok) {
-      return { ok: false, data: null, error: `Failed to fetch categories: ${response.status} ${response.statusText}` };
-    }
-    const data: string[] = await response.json();
-    return { ok: true, data, error: null };
+    const response = await apiClient.get<string[]>('/categories');
+    return { ok: true, data: response.data, error: null };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    const errorMessage = err instanceof AxiosError ? err.message : 'Unknown error';
     console.error('Error fetching categories:', errorMessage);
     return { ok: false, data: null, error: errorMessage };
   }
@@ -84,14 +79,10 @@ export async function getCategories(): Promise<ApiResult<string[]>> {
  */
 export async function getProductsByCategory(category: string): Promise<ApiResult<Product[]>> {
   try {
-    const response = await fetch(`${BASE_URL}/products/category/${encodeURIComponent(category)}`);
-    if (!response.ok) {
-      return { ok: false, data: null, error: `Failed to fetch products in category "${category}": ${response.status} ${response.statusText}` };
-    }
-    const data: Product[] = await response.json();
-    return { ok: true, data, error: null };
+    const response = await apiClient.get<Product[]>(`/products/category/${encodeURIComponent(category)}`);
+    return { ok: true, data: response.data, error: null };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    const errorMessage = err instanceof AxiosError ? err.message : 'Unknown error';
     console.error(`Error fetching products in category "${category}":`, errorMessage);
     return { ok: false, data: null, error: errorMessage };
   }
