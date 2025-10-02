@@ -2,8 +2,9 @@ import { getProductById, getCategories } from '@/lib/api/api';
 import ProductForm from '@/components/admin/product-form';
 import { updateProduct } from '@/lib/actions/actions';
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
-  const productId = parseInt(params.id, 10);
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: paramsId } = await params;
+  const productId = parseInt(paramsId, 10);
   if (isNaN(productId)) {
     return <div className="text-red-600">Invalid product ID</div>;
   }
