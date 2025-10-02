@@ -2,8 +2,9 @@ import { getProductById } from "@/lib/api/api";
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const productId = parseInt(params.id, 10);
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: paramsId } = await params;
+  const productId = parseInt(paramsId, 10);
   if (isNaN(productId)) {
     return <div className="container mx-auto px-4 py-8 text-center text-red-600">Invalid product ID</div>;
   }
