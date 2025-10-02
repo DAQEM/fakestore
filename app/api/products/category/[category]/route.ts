@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET(
   request: Request,
-  { params }: { params: { category: string } }
+  { params }: { params: Promise<{ category: string }> }
 ) {
-  // The category name from the URL might be URL-encoded (e.g., "men's%20clothing")
-  const category = decodeURIComponent(params.category);
+  const { category: paramsCategory } = await params;
+  const category = decodeURIComponent(paramsCategory);
 
   const { data, error } = await supabase
     .from('products')
