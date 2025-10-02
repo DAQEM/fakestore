@@ -1,4 +1,4 @@
-import { getProductById } from "@/lib/api/fake-store-api";
+import { getProductById } from "@/lib/api/api";
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
               <p className="text-gray-700 mb-6">{product.description}</p>
               <div className="flex items-center mb-4">
                 <span className="text-yellow-400 mr-1">★</span>
-                <span className="text-sm text-gray-600">{product.rating.rate} ({product.rating.count} reviews)</span>
+                <span className="text-sm text-gray-600">{product.rating_rate} ({product.rating_count} reviews)</span>
               </div>
               <span className="text-3xl font-bold text-blue-600">${product.price.toFixed(2)}</span>
               <div className="mt-6">

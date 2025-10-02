@@ -1,4 +1,8 @@
-const BASE_URL = 'https://fakestoreapi.com';
+// The environment variable gives us the absolute path needed for server-side fetching.
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
+// We construct the absolute base URL for our API endpoints.
+const BASE_URL = `${APP_URL}/api`;
 
 // Interface for a Product object
 export interface Product {
@@ -8,10 +12,8 @@ export interface Product {
   description: string;
   category: string;
   image: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
+  rating_rate: number;
+  rating_count: number;
 }
 
 // Result type for successful data or error
@@ -62,7 +64,7 @@ export async function getProductById(id: number): Promise<ApiResult<Product>> {
  */
 export async function getCategories(): Promise<ApiResult<string[]>> {
   try {
-    const response = await fetch(`${BASE_URL}/products/categories`);
+    const response = await fetch(`${BASE_URL}/categories`);
     if (!response.ok) {
       return { ok: false, data: null, error: `Failed to fetch categories: ${response.status} ${response.statusText}` };
     }

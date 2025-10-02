@@ -1,4 +1,4 @@
-import { getAllProducts, getCategories, getProductsByCategory } from "@/lib/api/fake-store-api";
+import { getAllProducts, getCategories, getProductsByCategory } from "@/lib/api/api";
 import ProductCard from '@/components/product-card';
 import Link from 'next/link';
 

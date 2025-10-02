@@ -1,4 +1,4 @@
-import { Product } from "@/lib/api/fake-store-api";
+import { Product } from "@/lib/api/api";
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -32,7 +32,7 @@ export default function ProductCard({ product, showDescription = false }: Produc
         </div>
         <div className="mt-2 flex items-center">
           <span className="text-yellow-400">★</span>
-          <span className="ml-1 text-sm text-gray-600">{product.rating.rate} ({product.rating.count} reviews)</span>
+          <span className="ml-1 text-sm text-gray-600">{product.rating_rate} ({product.rating_count} reviews)</span>
         </div>
       </div>
     </Link>
