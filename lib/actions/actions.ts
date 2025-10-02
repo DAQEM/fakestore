@@ -33,7 +33,7 @@ async function makeApiRequest(method: 'post' | 'put' | 'delete', url: string, da
 }
 
 // CREATE Product Action
-export async function createProduct(prevState: {}, formData: FormData) {
+export async function createProduct(prevState: object, formData: FormData) {
   const productData: ProductData = {
     title: formData.get('title')?.toString() || null,
     price: Number(formData.get('price')),
@@ -57,7 +57,7 @@ export async function createProduct(prevState: {}, formData: FormData) {
 }
 
 // UPDATE Product Action
-export async function updateProduct(id: number, prevState: {}, formData: FormData) {
+export async function updateProduct(id: number, prevState: object, formData: FormData) {
   const productData: ProductData = {
     title: formData.get('title')?.toString() || null,
     price: Number(formData.get('price')),
