@@ -55,7 +55,7 @@ export async function getCart(): Promise<Cart | null> {
         products: Array.isArray(item.products) ? item.products[0] : item.products,
       })),
     };
-    delete (transformedCart as any).cart_items;
+    delete (transformedCart as { cart_items?: object }).cart_items;
     return transformedCart;
   }
 
