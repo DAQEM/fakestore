@@ -1,22 +1,11 @@
 import axios, { AxiosError } from 'axios';
+import { Product } from '../types';
 
 // The environment variable gives us the absolute path needed for server-side fetching.
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 // We construct the absolute base URL for our API endpoints.
 const BASE_URL = `${APP_URL}/api`;
-
-// Interface for a Product object
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  rating_rate: number;
-  rating_count: number;
-}
 
 // Result type for successful data or error
 type ApiResult<T> = { ok: true; data: T; error: null } | { ok: false; data: null; error: string };

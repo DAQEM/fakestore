@@ -1,6 +1,6 @@
 'use client';
 
-import { Product } from '@/lib/api/api';
+import { Product } from '@/lib/types';
 import { useActionState } from 'react';
 
 interface ProductFormProps {

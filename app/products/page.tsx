@@ -1,12 +1,16 @@
 import { getAllProducts, getCategories, getProductsByCategory } from "@/lib/api/api";
 import ProductCard from '@/components/product-card';
 import Link from 'next/link';
+import { createClient } from "@/utils/supabase/server";
 
 export default async function ProductsPage({
   searchParams
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   const categoryFilter = (await searchParams).category;
   const productsResult = categoryFilter ? await getProductsByCategory(categoryFilter) : await getAllProducts();
   const categoriesResult = await getCategories();
@@ -62,7 +66,12 @@ export default async function ProductsPage({
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} showDescription={true} />
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              showDescription={true} 
+              isLoggedIn={!!user}
+            />
           ))}
         </div>
       </main>

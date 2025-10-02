@@ -1,6 +1,8 @@
 import { getProductById } from "@/lib/api/api";
 import Image from 'next/image';
 import Link from 'next/link';
+import { createClient } from '@/utils/supabase/server';
+import AddToCartForm from '@/components/cart/add-to-cart-form';
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: paramsId } = await params;
@@ -9,7 +11,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     return <div className="container mx-auto px-4 py-8 text-center text-red-600">Invalid product ID</div>;
   }
 
-  const productResult = await getProductById(productId);
+  const [productResult, supabase] = await Promise.all([getProductById(productId), createClient()]);
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!productResult.ok) {
     return <div className="container mx-auto px-4 py-8 text-center text-red-600">Error loading product: {productResult.error}</div>;
@@ -59,9 +62,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               </div>
               <span className="text-3xl font-bold text-blue-600">${product.price.toFixed(2)}</span>
               <div className="mt-6">
-                <button className="w-full px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-center">
-                  Buy Now
-                </button>
+                {user ? (
+                    <AddToCartForm productId={product.id} />
+                ) : (
+                    <Link href="/login" className="block w-full text-center px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                        Login to Add to Cart
+                    </Link>
+                )}
               </div>
             </div>
           </div>

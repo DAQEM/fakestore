@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import { logout } from '@/lib/actions/actions';
+import { getCartCount } from '@/lib/data';
 
 export default async function Header() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const cartCount = user ? await getCartCount() : 0;
 
   return (
     <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-10 h-16 flex items-center">
@@ -20,7 +22,7 @@ export default async function Header() {
             Products
           </Link>
           <Link href="/cart" className="text-gray-600 hover:text-blue-600 transition-colors">
-            Cart
+            Cart ({cartCount})
           </Link>
           
           {user && user.user_metadata.role === 'admin' && (

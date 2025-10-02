@@ -144,3 +144,124 @@ export async function logout() {
   revalidatePath('/', 'layout');
   redirect('/');
 }
+
+/**
+ * Finds the user's cart or creates a new one if it doesn't exist.
+ * Throws an error if the user is not authenticated.
+ * @param supabase - The Supabase client instance.
+ * @returns The user's cart object with an 'id'.
+ */
+async function findOrCreateCart() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated. Cannot perform cart operation.');
+
+    // Check if a cart already exists for the user.
+    let { data: cart } = await supabase.from('carts').select('id').eq('user_id', user.id).single();
+
+    // If no cart exists, create one.
+    if (!cart) {
+        const { data: newCart, error } = await supabase.from('carts').insert({ user_id: user.id }).select('id').single();
+        if (error) {
+            console.error('Supabase error creating cart:', error);
+            throw new Error('Could not create a new cart.');
+        }
+        cart = newCart;
+    }
+
+    return cart;
+}
+
+/**
+ * Adds a product to the cart or increments its quantity if it already exists.
+ * @param productId - The ID of the product to add.
+ */
+export async function addItem(productId: number): Promise<{ message: string | null } | void> {
+  try {
+    const supabase = await createClient();
+    const cart = await findOrCreateCart();
+
+    // Check if the item is already in the cart.
+    const { data: existingItem } = await supabase
+      .from('cart_items')
+      .select('id, quantity')
+      .eq('cart_id', cart.id)
+      .eq('product_id', productId)
+      .single();
+
+    if (existingItem) {
+      // If it exists, increment the quantity.
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq('id', existingItem.id);
+
+      if (error) throw error;
+    } else {
+      // If it's a new item, insert it with quantity 1.
+      const { error } = await supabase
+        .from('cart_items')
+        .insert({ cart_id: cart.id, product_id: productId, quantity: 1 });
+
+      if (error) throw error;
+    }
+
+    // Revalidate paths to update the UI, including the header cart count.
+    revalidatePath('/cart');
+    revalidatePath('/', 'layout');
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+    return { message: 'Could not add item to cart. Please try again.' };
+  }
+}
+
+/**
+ * Updates the quantity of a specific item in the cart.
+ * If quantity drops to 0 or less, the item is removed.
+ * @param itemId - The ID of the cart item.
+ * @param quantity - The new quantity.
+ */
+export async function updateItemQuantity(itemId: number, quantity: number) {
+    if (quantity < 1) {
+        // If quantity is less than 1, remove the item instead.
+        return removeItem(itemId);
+    }
+
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase
+            .from('cart_items')
+            .update({ quantity })
+            .eq('id', itemId);
+        
+        if (error) throw error;
+
+        revalidatePath('/cart');
+        revalidatePath('/', 'layout');
+    } catch (error) {
+        console.error('Error updating item quantity:', error);
+        return { message: 'Could not update item quantity.' };
+    }
+}
+
+/**
+ * Removes an item from the cart entirely.
+ * @param itemId - The ID of the cart item to remove.
+ */
+export async function removeItem(itemId: number) {
+    try {
+        const supabase = await createClient();
+        const { error } = await supabase
+            .from('cart_items')
+            .delete()
+            .eq('id', itemId);
+        
+        if (error) throw error;
+        
+        revalidatePath('/cart');
+        revalidatePath('/', 'layout');
+    } catch (error) {
+        console.error('Error removing item from cart:', error);
+        return { message: 'Could not remove item from cart.' };
+    }
+}
