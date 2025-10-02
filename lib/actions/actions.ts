@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import axios from 'axios';
+import { createClient } from '@/utils/supabase/server';
+import { headers } from 'next/headers';
 
 const API_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/products`;
 
@@ -92,4 +94,53 @@ export async function deleteProduct(id: number) {
   
   revalidatePath('/admin');
   revalidatePath('/products');
+}
+
+export async function login(prevState: any, formData: FormData) {
+  const supabase = await createClient();
+
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { message: error.message };
+  }
+  revalidatePath('/', 'layout');
+  redirect('/');
+}
+
+export async function signup(prevState: any, formData: FormData) {
+  const origin = (await headers()).get('origin');
+  const supabase = await createClient();
+
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    return { message: error.message };
+  }
+  
+  // On successful sign-up, Supabase sends a confirmation email.
+  // We can return a success message to the user.
+  return { message: 'Check your email to continue signing up.' };
+}
+
+export async function logout() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  revalidatePath('/', 'layout');
+  redirect('/');
 }
