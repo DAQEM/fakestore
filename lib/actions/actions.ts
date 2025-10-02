@@ -6,8 +6,19 @@ import axios from 'axios';
 
 const API_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/products`;
 
+type ProductData = {
+    title: string | null;
+    price: number | null;
+    description: string | null;
+    category: string | null;
+    image: string | null;
+    rating_rate?: number;
+    rating_count?: number;
+};
+
+
 // Helper function to handle API requests
-async function makeApiRequest(method: 'post' | 'put' | 'delete', url: string, data?: any) {
+async function makeApiRequest(method: 'post' | 'put' | 'delete', url: string, data?: ProductData) {
   try {
     const response = await axios[method](url, data);
     return { success: true, data: response.data };
@@ -22,13 +33,13 @@ async function makeApiRequest(method: 'post' | 'put' | 'delete', url: string, da
 }
 
 // CREATE Product Action
-export async function createProduct(prevState: any, formData: FormData) {
-  const productData = {
-    title: formData.get('title'),
+export async function createProduct(prevState: {}, formData: FormData) {
+  const productData: ProductData = {
+    title: formData.get('title')?.toString() || null,
     price: Number(formData.get('price')),
-    description: formData.get('description'),
-    category: formData.get('category'),
-    image: formData.get('image'),
+    description: formData.get('description')?.toString() || null,
+    category: formData.get('category')?.toString() || null,
+    image: formData.get('image')?.toString() || null,
     // Default rating for new products
     rating_rate: 0,
     rating_count: 0,
@@ -46,13 +57,13 @@ export async function createProduct(prevState: any, formData: FormData) {
 }
 
 // UPDATE Product Action
-export async function updateProduct(id: number, prevState: any, formData: FormData) {
-  const productData = {
-    title: formData.get('title'),
+export async function updateProduct(id: number, prevState: {}, formData: FormData) {
+  const productData: ProductData = {
+    title: formData.get('title')?.toString() || null,
     price: Number(formData.get('price')),
-    description: formData.get('description'),
-    category: formData.get('category'),
-    image: formData.get('image'),
+    description: formData.get('description')?.toString() || null,
+    category: formData.get('category')?.toString() || null,
+    image: formData.get('image')?.toString() || null,
   };
 
   const result = await makeApiRequest('put', `${API_URL}/${id}`, productData);

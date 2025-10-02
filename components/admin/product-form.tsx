@@ -6,7 +6,7 @@ import { useActionState } from 'react';
 interface ProductFormProps {
   product?: Product;
   categories: string[];
-  action: (prevState: any, formData: FormData) => Promise<{ message: string }>;
+  action: (prevState: {}, formData: FormData) => Promise<{ message: string }>;
   buttonText: string;
 }
 
