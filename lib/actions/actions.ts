@@ -96,7 +96,7 @@ export async function deleteProduct(id: number) {
   revalidatePath('/products');
 }
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(prevState: object, formData: FormData) {
   const supabase = await createClient();
 
   const email = formData.get('email') as string;
@@ -114,7 +114,7 @@ export async function login(prevState: any, formData: FormData) {
   redirect('/');
 }
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(prevState: object, formData: FormData) {
   const origin = (await headers()).get('origin');
   const supabase = await createClient();
 

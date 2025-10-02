@@ -52,7 +52,7 @@ export default function AuthForm({ type }: AuthFormProps) {
       <div className="mt-6 text-center">
         {type === 'login' ? (
           <p className="text-sm text-gray-600">
-            Don't have an account? <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">Sign up</Link>
+            Don&apos;t have an account? <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">Sign up</Link>
           </p>
         ) : (
           <p className="text-sm text-gray-600">
